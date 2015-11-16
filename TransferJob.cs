@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Diagnostics;
 using System.IO;
 using WinSCP;
 
@@ -39,40 +36,39 @@ namespace NGSTransferConsole
             Framework.WriteLog(@"Experiment name: " + sampleSheetHeader.getExperimentName, 0);
 
             //determine institution
-            try
+            if (sampleSheetHeader.getInvestigatorName == null || sampleSheetHeader.getInvestigatorName == "" || !sampleSheetHeader.getInvestigatorName.Contains('-'))
             {
-                fields = sampleSheetHeader.getInvestigatorName.Split('-');
-
-                if (fields[1].ToUpper() == @"CU")
-                {
-                    nhsRun = false;
-                    Framework.WriteLog(@"Investigator name: " + fields[0], 0);
-                    Framework.WriteLog(@"Institution name: Cardiff University", 0);
-
-                    sessionOptions.SshHostKeyFingerprint = config.getWotanSshHostKeyFingerprint;
-                    sessionOptions.HostName = config.getWotanHostName;
-                    sessionOptions.UserName = config.getWotanSshUserName;
-                    sessionOptions.SshPrivateKeyPath = config.getWotanSshPrivateKeyPath;
-                }
-                else if (fields[1].ToUpper() == @"NHS")
-                {
-                    nhsRun = true;
-                    Framework.WriteLog(@"Investigator name: " + fields[0], 0);
-                    Framework.WriteLog(@"Institution name: NHS", 0);
-
-                    sessionOptions.SshHostKeyFingerprint = config.getCvxGenSshHostKeyFingerprint;
-                    sessionOptions.HostName = config.getCvxGenHostName;
-                    sessionOptions.UserName = config.getCvxGenSshUserName;
-                    sessionOptions.SshPrivateKeyPath = config.getCvxGenSshPrivateKeyPath;
-                }
-                else
-                {
-                    throw new InvalidDataException(@"Institute not recognised. CU an NHS are only available options.");
-                }
+                throw new InvalidDataException(@"Investigator name field not provided or malformed.");
             }
-            catch (IndexOutOfRangeException)
+
+            //split investigtor name field
+            fields = sampleSheetHeader.getInvestigatorName.Split('-');
+
+            if (fields[1].ToUpper() == @"CU")
             {
-                throw new InvalidDataException(@"Institute not provided.");
+                nhsRun = false;
+                Framework.WriteLog(@"Investigator name: " + fields[0], 0);
+                Framework.WriteLog(@"Institution name: Cardiff University", 0);
+
+                sessionOptions.SshHostKeyFingerprint = config.getWotanSshHostKeyFingerprint;
+                sessionOptions.HostName = config.getWotanHostName;
+                sessionOptions.UserName = config.getWotanSshUserName;
+                sessionOptions.SshPrivateKeyPath = config.getWotanSshPrivateKeyPath;
+            }
+            else if (fields[1].ToUpper() == @"NHS")
+            {
+                nhsRun = true;
+                Framework.WriteLog(@"Investigator name: " + fields[0], 0);
+                Framework.WriteLog(@"Institution name: NHS", 0);
+
+                sessionOptions.SshHostKeyFingerprint = config.getCvxGenSshHostKeyFingerprint;
+                sessionOptions.HostName = config.getCvxGenHostName;
+                sessionOptions.UserName = config.getCvxGenSshUserName;
+                sessionOptions.SshPrivateKeyPath = config.getCvxGenSshPrivateKeyPath;
+            }
+            else
+            {
+                throw new InvalidDataException(@"Institute not recognised. CU an NHS are only available options.");
             }
 
             //convert metrics into table
@@ -105,16 +101,8 @@ namespace NGSTransferConsole
                     transferOptions.TransferMode = TransferMode.Binary;
 
                     //make remote project directory
-                    try
-                    {
-                        Framework.WriteLog(@"Creating remote directory: " + remotePath, 0);
-                        session.CreateDirectory(remotePath);
-                    }
-                    catch (Exception e)
-                    {
-                        Framework.WriteLog(@"Could not create remote directory: " + e.ToString(), -1);
-                        throw;
-                    }
+                    Framework.WriteLog(@"Creating remote directory: " + remotePath, 0);
+                    session.CreateDirectory(remotePath);
 
                     //transfer run folder to archive
                     Framework.WriteLog(@"Tranfer started ...", 0);

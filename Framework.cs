@@ -34,31 +34,6 @@ namespace NGSTransferConsole
             }
         }
 
-        public static void DeleteOldestSubfoldersRecursively(string localRunDir, int maxSubDirsToKeep)
-        {
-            //get dir list and sort by date creation
-            var di = new DirectoryInfo(localRunDir);
-            var directories = di.EnumerateDirectories()
-                                .OrderBy(d => d.CreationTime)
-                                .Select(d => d.Name)
-                                .ToList();
-
-            //delete subfolders; protect the last maxSubDirsToKeep (newest) runs
-            for (int n = 0; n < directories.Count - maxSubDirsToKeep; ++n)
-            {
-                try
-                {
-                    Framework.WriteLog(@"Deleting folder: " + Path.Combine(localRunDir, directories[n]), 0);
-                    //Directory.Delete(localRunDir + directories[n], true);
-                }
-                catch (Exception e)
-                {
-                    Framework.WriteLog(@"Could not delete folder: " + e.ToString(), -1);
-                }
-            }
-
-        }
-
         public static string GetMD5HashFromFile(string fileName)
         {
             FileStream file = new FileStream(fileName, FileMode.Open);
