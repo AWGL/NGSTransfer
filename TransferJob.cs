@@ -115,7 +115,7 @@ namespace NGSTransferConsole
 
                     //execute remote function
                     Framework.WriteLog(@"Execuing post-run command ...", 0);
-                    session.ExecuteCommand(@"bash " + config.getCvxGenRemoteScriptPath + ' ' + remotePath + ' ' + config.getCvxGenRemoteResultsPath + '/' + runId);
+                    session.ExecuteCommand(@"bash " + config.getCvxGenRemoteScriptPath + ' ' + remotePath + ' ' + config.getCvxGenRemoteResultsPath + '/' + runId + @" >> ~/runPipeline.log");
                 }
             }
             else
