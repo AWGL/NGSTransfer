@@ -8,7 +8,7 @@ namespace NGSTransferConsole
 {
     class Program
     {
-        public const string programVersion = "1.0.2";
+        public const string programVersion = "1.0.3";
         private static Config config = new Config();
 
         static void Main(string[] args)
